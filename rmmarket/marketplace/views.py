@@ -1,3 +1,5 @@
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from django.conf import settings
 from django.shortcuts import render
 from rest_framework import authentication, status
@@ -10,6 +12,7 @@ import requests
 
 from .models import BuyOrRentDeal, MarketplaceService
 from .serializers import BuyOrRentDealSerializer, MarketplaceServiceSerializer
+
 
 # Create your views here.
 
@@ -28,6 +31,7 @@ class CreateDealAPIView(APIView):
     serializer_class = BuyOrRentDealSerializer
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(request_body=BuyOrRentDealSerializer, responses={status.HTTP_201_CREATED: ''})
     def post(self, request):
         user_data = check_auth(request)
         if user_data.get('pk'):
@@ -35,7 +39,8 @@ class CreateDealAPIView(APIView):
                 user_id=user_data['pk'],
                 commercial_id=request.data['commercial_id'],
                 price=request.data['price'],
-                deal_type=request.data['deal_type']
+                deal_type=request.data['deal_type'],
+                expires=request.data['expires']
             )
             return Response(status=status.HTTP_201_CREATED)
         else:
@@ -61,7 +66,7 @@ def check_auth(request):
     if prefix.lower() != auth_header_prefix:
         return
 
-    res = requests.get(headers={'Authorization': f'{prefix} {token}'}, url=settings.AUTH_SERVICE_URL+'user/')
+    res = requests.get(headers={'Authorization': f'{prefix} {token}'}, url=settings.AUTH_SERVICE_URL + 'user/')
     return res.json()
 
 
@@ -69,6 +74,18 @@ class UpdateDealStatusAPIView(APIView):
     serializer_class = BuyOrRentDealSerializer
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'commercial_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='commercial apart id'),
+            'owner_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='owner id'),
+            'status': openapi.Schema(type=openapi.TYPE_STRING, description='status'),
+        },
+    ),
+        responses={
+            status.HTTP_200_OK: ''
+        }
+    )
     def post(self, request, deal_id):
         user_data = check_auth(request)
         if user_data.get('pk'):
@@ -77,10 +94,10 @@ class UpdateDealStatusAPIView(APIView):
                 deal.status = request.data['status']
                 if request.data['status'] == '3':
                     if deal.deal_type == '1':
-                        requests.post(settings.AUTH_SERVICE_URL+'updaterole/', data={
+                        requests.post(settings.AUTH_SERVICE_URL + 'updaterole/', data={
                             'role': 'Renter',
                         })
-                        requests.put(settings.COMMERCIAL_URL+'/', data={
+                        requests.put(settings.COMMERCIAL_URL + '/', data={
                             'id': request.data['commercial_id'],
                             'owner_id': request.data['owner_id'],
                             'status': 'Rented'
@@ -94,7 +111,6 @@ class UpdateDealStatusAPIView(APIView):
                             'owner_id': request.data['owner_id'],
                             'status': 'Owned'
                         })
-                        # тут запрос для присваивания человека коммерции(помещению)
                 deal.save(updated_fields=('status',))
                 return Response(status=status.HTTP_200_OK)
             else:

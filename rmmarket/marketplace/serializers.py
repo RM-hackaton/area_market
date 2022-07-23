@@ -1,20 +1,13 @@
 from rest_framework import serializers
 
-from .models import BuyOrRentDeal, MarketplaceService, DealStatus
-
-
-class DealStatusSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DealStatus
-        fields = ('name',)
+from .models import BuyOrRentDeal, MarketplaceService
 
 
 class BuyOrRentDealSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BuyOrRentDeal
-        fields = ('pk', 'user_id', 'commercial_id', 'price', 'deal_type', 'status', )
+        fields = ('pk', 'user_id', 'commercial_id', 'price', 'deal_type', 'status', 'expires')
 
 
 class MarketplaceServiceSerializer(serializers.ModelSerializer):

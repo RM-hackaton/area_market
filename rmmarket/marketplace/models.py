@@ -5,14 +5,11 @@ from django.db import models
 # Create your models here.
 
 
-class DealStatus(models.Model):
-    name = models.CharField(max_length=20)
-
-
 class BuyOrRentDeal(models.Model):
     user_id = models.BigIntegerField()
     commercial_id = models.BigIntegerField()
     price = models.BigIntegerField()
+    expires = models.DateField()
     deal_type = models.CharField(max_length=10, choices=[('1', 'Аренда'), ('2', 'Покупка')])
     date = models.DateField(auto_now=True)
     status = models.CharField(max_length=15,
