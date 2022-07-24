@@ -4,4 +4,6 @@ from .models import MarketplaceService, BuyOrRentDeal
 
 # Register your models here.
 
+admin.site.register(MarketplaceService)
+admin.site.register(BuyOrRentDeal)
 
