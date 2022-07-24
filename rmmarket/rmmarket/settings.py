@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!g@pdr1(&pc&s6_$b(@=pv69u&17w7ah5!zw(@@w!8ocq3s=l%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'http://89.108.70.47/', '89.108.70.47']
 
 
 # Application definition
@@ -82,8 +82,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'db',
+        'USER': 'my_user',
+        'PASSWORD': 'mysecretpassword',
+        'HOST': 'db',
+        'PORT': '5432'
     }
 }
 
@@ -142,5 +146,5 @@ REST_FRAMEWORK = {
 }
 
 AUTH_SERVICE_URL = 'http://80.78.241.239/'
-COMMERCIAL_URL = ''
+COMMERCIAL_URL = 'http://151.248.122.162/'
 AUTHENTICATION_HEADER_PREFIX = 'Token'
