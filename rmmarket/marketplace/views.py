@@ -131,8 +131,11 @@ class MarketplaceServiceListAPIView(ListCreateAPIView):
     permission_classes = (AllowAny,)
     pagination_class = LimitOffsetPagination
 
+    def get_queryset(self):
+        return MarketplaceService.objects.all()
+
     def list(self, request, *args, **kwargs):
-        queryset = self.queryset()
+        queryset = self.get_queryset()
         serializer = self.serializer_class(queryset, many=True)
         return Response(data=serializer.data)
 
